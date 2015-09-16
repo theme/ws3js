@@ -1,0 +1,17 @@
+{
+  "name": "ws3js",
+  "version": "1.0.0",
+  "description": "test project of three.js and HTML5.",
+  "main": " ",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "three.js.html"
+  },
+  "author": "theme",
+  "license": "ISC",
+  "devDependencies": {
+    "three": "^0.71.1"
+  }
+}
