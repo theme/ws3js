@@ -1,5 +1,5 @@
 // a test scene
-//
+
 log = console.log.bind(console);    // logger
 
 var camera, scene, renderer, canvas, callbackID;
@@ -40,7 +40,6 @@ var geometry = new THREE.BoxGeometry( 5, 6, 10 );
 var mesh = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.4 } );
 var cube = new THREE.Mesh( geometry, mesh );
 scene.add( cube );
-
 // edge helper
 var egh = new THREE.EdgesHelper( cube, 0x00ffff );
 egh.material.linewidth = 2;
@@ -75,6 +74,27 @@ onResize(canvas, function () {
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
 });
+
+// drag
+var onMouseDownCanvas = function(e){
+
+    // when mouse down, register drag event
+    var onMouseMoveCanvas = function(e){
+        log("drag!");
+    };
+    canvas.addEventListener("mousemove", onMouseMoveCanvas);
+
+    // when mouse up / out, un-register drag event
+    var onMouseOutCanvas = function(e){
+        log("mouse out!");
+        canvas.removeEventListener("mousemove", onMouseMoveCanvas);
+        canvas.removeEventListener("mouseout", onMouseOutCanvas);
+        canvas.removeEventListener("mouseup", onMouseOutCanvas);
+    };
+    canvas.addEventListener("mouseup", onMouseOutCanvas );
+    canvas.addEventListener("mouseout", onMouseOutCanvas);
+}
+canvas.addEventListener("mousedown", onMouseDownCanvas);
 
 // log fps
 var msec = 0;
