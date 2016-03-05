@@ -51,10 +51,17 @@ function render() {
     renderer.render( scene, camera );
     cube.rotation.x += 0.01;
 
+    // drag camera, according to canvas mouseDown-Move event
+    if ( typeof canvas.cursor.deltaClientX === "number"){
+        var pos = camera.position;
+
+        camera.position.x = pos.x + canvas.cursor.deltaClientX;
+        // log(camera.position.x);
+    }
     // fps();
 }
 
-function onResize(element, callback) {
+function onResize(element, callback) {  // delayed resize watcher
     var height = element.clientHeight;
     var width  = element.clientWidth;
 
@@ -67,7 +74,7 @@ function onResize(element, callback) {
     }, 500);
 }
 
-onResize(canvas, function () {
+onResize(canvas, function () {  // handle canvas resize
     canvas.width  = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
@@ -75,18 +82,32 @@ onResize(canvas, function () {
     camera.updateProjectionMatrix();
 });
 
-// drag
-var onMouseDownCanvas = function(e){
+// drag in canvas
+canvas.cursor = {};
+
+function onDragCanvas(e){
+    var cursor = canvas.cursor;
+    cursor.deltaClientX = e.clientX - cursor.prevClientX;
+    cursor.deltaClientY = e.clientY - cursor.prevClientY;
+    cursor.prevClientX = e.clientX;
+    cursor.prevClientY = e.clientY;
+}
+
+function onMouseDownCanvas(e){
+    var cursor = canvas.cursor;
+    cursor.prevClientX = e.clientX;
+    cursor.prevClientY = e.clientY;
 
     // when mouse down, register drag event
     var onMouseMoveCanvas = function(e){
-        log("drag!");
+        onDragCanvas(e);
     };
     canvas.addEventListener("mousemove", onMouseMoveCanvas);
 
     // when mouse up / out, un-register drag event
     var onMouseOutCanvas = function(e){
-        log("mouse out!");
+        canvas.cursor.deltaClientX = 0;
+        canvas.cursor.deltaClientY = 0;
         canvas.removeEventListener("mousemove", onMouseMoveCanvas);
         canvas.removeEventListener("mouseout", onMouseOutCanvas);
         canvas.removeEventListener("mouseup", onMouseOutCanvas);
