@@ -35,31 +35,47 @@ camera.position.set( 10, 5, 10 );
 camera.lookAt(scene.position); // (0,0,0)
 log("cameraRatio: ", cameraRatio);
 
+// scene objects parent
+
 // cube
-var geometry = new THREE.BoxGeometry( 5, 6, 10 );
-var mesh = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.4 } );
-var cube = new THREE.Mesh( geometry, mesh );
-scene.add( cube );
-// edge helper
-var egh = new THREE.EdgesHelper( cube, 0x00ffff );
-egh.material.linewidth = 2;
-scene.add( egh );
+function mkCube(){
+    var geometry = new THREE.BoxGeometry( 5, 6, 10 );
+    var mesh = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.4 } );
+    var cube = new THREE.Mesh( geometry, mesh );
+    // edge helper
+    var egh = new THREE.EdgesHelper( cube, 0x00ffff );
+    egh.material.linewidth = 2;
+    cube.add(egh);
 
-// render loop: self reinstall every frame
-function render() {
-    requestAnimationFrame( render );
-    renderer.render( scene, camera );
-    cube.rotation.x += 0.01;
+    cube.update = function(){
+        cube.rotation.x += 0.01;
+    };
 
-    // drag camera, according to canvas mouseDown-Move event
-    if ( typeof canvas.cursor.deltaClientX === "number"){
-        var pos = camera.position;
-
-        camera.position.x = pos.x + canvas.cursor.deltaClientX;
-        // log(camera.position.x);
-    }
-    // fps();
+    return cube;
 }
+var cube = mkCube();
+scene.add( cube );
+
+// time line arraow
+function mkLine(){
+    var material_line = new THREE.LineBasicMaterial({ color: "yellow" });
+    var geometry_line = new THREE.Geometry();
+    geometry_line.vertices.push(
+        new THREE.Vector3(-10,0,0),
+        new THREE.Vector3(10,0,0)
+    ); 
+    var line = new THREE.Line(geometry_line, material_line);
+    return line;
+}
+scene.add(mkLine());
+
+// event point
+function mkEventPoint(time, place, story){
+    // calculate x,y,z
+
+    // make 
+}
+
 
 function onResize(element, callback) {  // delayed resize watcher
     var height = element.clientHeight;
@@ -127,6 +143,27 @@ function fps() {
         frame = 0;
         msec = Date.now();
     }
+}
+
+// render loop: self reinstall every frame
+function render() {
+    requestAnimationFrame( render );
+    renderer.render( scene, camera );
+    
+    scene.traverse( function(obj){ 
+        if( obj.hasOwnProperty("update") && typeof obj.update === "function" ){
+            obj.update(); 
+        }
+    } );
+
+    // drag camera, according to canvas mouseDown-Move event
+    if ( typeof canvas.cursor.deltaClientX === "number"){
+        var pos = camera.position;
+
+        camera.position.x = pos.x + canvas.cursor.deltaClientX;
+        // log(camera.position.x);
+    }
+    // fps();
 }
 
 render();
