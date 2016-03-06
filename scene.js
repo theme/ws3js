@@ -1,5 +1,4 @@
 // a test scene
-
 log = console.log.bind(console);    // logger
 
 var camera, scene, renderer, canvas, callbackID;
@@ -23,7 +22,7 @@ mkCanvas("3jscanvas");
 // renderer
 renderer = new THREE.WebGLRenderer({canvas: canvas});
 renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
-renderer.setClearColor( new THREE.Color(0x003366) ); // ±³¾°É«¤òÖ¸¶¨
+renderer.setClearColor( new THREE.Color(0x003366) );    // bg color
 
 // scene
 scene = new THREE.Scene();
@@ -39,12 +38,15 @@ log("cameraRatio: ", cameraRatio);
 
 // cube
 function mkCube(){
+
     var geometry = new THREE.BoxGeometry( 5, 6, 10 );
     var mesh = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.4 } );
     var cube = new THREE.Mesh( geometry, mesh );
+
     // edge helper
     var egh = new THREE.EdgesHelper( cube, 0x00ffff );
-    egh.material.linewidth = 2;
+    egh.matrix = new THREE.Matrix4();
+
     cube.add(egh);
 
     cube.update = function(){
@@ -57,17 +59,19 @@ var cube = mkCube();
 scene.add( cube );
 
 // time line arraow
-function mkLine(){
-    var material_line = new THREE.LineBasicMaterial({ color: "yellow" });
+function mkLine(i,j,k, x,y,z, c){
+    var material_line = new THREE.LineBasicMaterial({ color: c});
     var geometry_line = new THREE.Geometry();
     geometry_line.vertices.push(
-        new THREE.Vector3(-10,0,0),
-        new THREE.Vector3(10,0,0)
+        new THREE.Vector3(i,j,k),
+        new THREE.Vector3(x,y,z)
     ); 
     var line = new THREE.Line(geometry_line, material_line);
     return line;
 }
-scene.add(mkLine());
+scene.add(mkLine(0,0,0, 10,0,0, "red"));
+scene.add(mkLine(0,0,0, 0,10,0, "green"));
+scene.add(mkLine(0,0,0, 0,0,10, "blue"));
 
 // event point
 function mkEventPoint(time, place, story){
@@ -75,7 +79,6 @@ function mkEventPoint(time, place, story){
 
     // make 
 }
-
 
 function onResize(element, callback) {  // delayed resize watcher
     var height = element.clientHeight;
@@ -167,3 +170,4 @@ function render() {
 }
 
 render();
+
