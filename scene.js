@@ -59,7 +59,7 @@ var cube = mkCube();
 scene.add( cube );
 
 // time line arraow
-function mkLine(i,j,k, x,y,z, c){
+function mkArrow(i,j,k, x,y,z, c){
     var material_line = new THREE.LineBasicMaterial({ color: c});
     var geometry_line = new THREE.Geometry();
     geometry_line.vertices.push(
@@ -67,11 +67,22 @@ function mkLine(i,j,k, x,y,z, c){
         new THREE.Vector3(x,y,z)
     ); 
     var line = new THREE.Line(geometry_line, material_line);
+
+    var arrow_g = new THREE.CylinderGeometry(0, 1, 5, 8, 8);
+    var arrow_m = new THREE.Mesh(arrow_g, material_line);
+    arrow_m.position.set(x,y,z);
+    var line_unitv = new THREE.Vector3(x-i, y-j, z-k);
+    arrow_m.quaternion.setFromUnitVectors(
+        new THREE.Vector3(0,1,0), 
+        line_unitv.normalize()
+    )
+
+    line.add(arrow_m);
     return line;
 }
-scene.add(mkLine(0,0,0, 10,0,0, "red"));
-scene.add(mkLine(0,0,0, 0,10,0, "green"));
-scene.add(mkLine(0,0,0, 0,0,10, "blue"));
+scene.add(mkArrow(0,0,0, 10,0,0, "red"));
+scene.add(mkArrow(0,0,0, 0,10,0, "green"));
+scene.add(mkArrow(0,0,0, 0,0,10, "blue"));
 
 // event point
 function mkEventPoint(time, place, story){
@@ -152,7 +163,7 @@ function fps() {
 function render() {
     requestAnimationFrame( render );
     renderer.render( scene, camera );
-    
+
     scene.traverse( function(obj){ 
         if( obj.hasOwnProperty("update") && typeof obj.update === "function" ){
             obj.update(); 
