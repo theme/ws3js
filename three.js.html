@@ -9,7 +9,10 @@
 </head>
 <body>
     <canvas id="3jscanvas" draggable></canvas>
+
+    <!-- data-main attribute tells require.js to load
+             scripts/main.js after require.js loads. -->
     <script src="./node_modules/three/three.min.js"></script>
-    <script src="scene.js"></script>
+    <script data-main="scene" src="require.js"></script>
 </body>
 </html>
