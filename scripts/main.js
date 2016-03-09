@@ -1,8 +1,6 @@
-require(['axis'],
-function(Axis){
+require(['log','axis'],
+function(log, Axis){
     // a test scene
-    log = console.log.bind(console);    // logger
-
     var camera, scene, renderer, canvas, callbackID;
 
     // canvas
@@ -58,7 +56,7 @@ function(Axis){
         return cube;
     }
     var cube = mkCube();
-    scene.add( cube );
+    // scene.add( cube );
 
     // time line arraow
     function mkArrow(i,j,k, x,y,z, c){
@@ -83,9 +81,9 @@ function(Axis){
         return line;
     }
     var origin = new THREE.Vector3();
-    scene.add(new Axis(origin, new THREE.Vector3(10,0,0), 0,10,'Time','red',[10,5]));
-    scene.add(new Axis(origin, new THREE.Vector3(0,10,0), 0,10,'y','green',[10,5]));
-    scene.add(new Axis(origin, new THREE.Vector3(0,0,10), 0,10,'z','blue',[10,5]));
+    scene.add(new Axis(origin, new THREE.Vector3(10,0,0), 0,10,'Time','red',[10,5,1]));
+    scene.add(new Axis(origin, new THREE.Vector3(0,10,0), 0,10,'y','green',[10,5,1]));
+    scene.add(new Axis(origin, new THREE.Vector3(0,0,10), 0,10,'z','blue',[10,5,1]));
 
     // event point
     function mkEventPoint(time, place, story){
@@ -185,3 +183,4 @@ function(Axis){
 
     render();
 });
+
