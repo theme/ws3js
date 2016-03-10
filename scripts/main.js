@@ -1,5 +1,5 @@
-require(['log','axis','navi'],
-function(log, Axis, Navi){
+require(['log','axis','navinput'],
+function(log, Axis, navinput){
     // a test scene
     var camera, scene, renderer, canvas, callbackID;
 
@@ -93,7 +93,7 @@ function(log, Axis, Navi){
     });
 
     // navigation input & response
-    Navi.decorate(canvas);  // canvas now has 'zoom', 'rotate' event
+    navinput.decorate(canvas);  // canvas now has 'zoom', 'rotate' event
 
     // zoom
     canvas.addEventListener('zoom', function(e){
