@@ -142,6 +142,18 @@ function(log, Axis, navinput){
         tgtCube.position.copy(camera.tgt);
     });
 
+    // instantiate a loader
+    var loader = new THREE.JSONLoader();
+
+    loader.load( 'models/cube.json',
+        function ( geometry, materials ) {
+            var material = new THREE.MultiMaterial( materials );
+            var object = new THREE.Mesh( geometry, material );
+            object.position.set(0,4,0);
+            scene.add( object );
+        }
+    );
+
     // log fps
     var msec = 0;
     var frame = 0;
