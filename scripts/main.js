@@ -1,5 +1,5 @@
-require(['log','axis'],
-function(log, Axis){
+require(['log','axis','navi'],
+function(log, Axis, Navi){
     // a test scene
     var camera, scene, renderer, canvas, callbackID;
 
@@ -35,7 +35,7 @@ function(log, Axis){
     log("cameraRatio: ", cameraRatio);
 
     // scene objects parent
-
+    
     // cube
     function mkCube(){
 
@@ -111,6 +111,14 @@ function(log, Axis){
         renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
         camera.updateProjectionMatrix();
+    });
+
+    // listen navigator event
+    Navi.decorate(canvas);
+    canvas.addEventListener('zoom', function(e){
+        var pos = camera.position;
+        var u = pos.clone().normalize();
+        camera.position.add(u.multiplyScalar(e.detail));
     });
 
     // drag in canvas
