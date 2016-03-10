@@ -56,30 +56,9 @@ function(log, Axis, Navi){
         return cube;
     }
     var cube = mkCube();
-    // scene.add( cube );
+    scene.add( cube );
 
-    // time line arraow
-    function mkArrow(i,j,k, x,y,z, c){
-        var material_line = new THREE.LineBasicMaterial({ color: c});
-        var geometry_line = new THREE.Geometry();
-        geometry_line.vertices.push(
-            new THREE.Vector3(i,j,k),
-            new THREE.Vector3(x,y,z)
-        ); 
-        var line = new THREE.Line(geometry_line, material_line);
-
-        var arrow_g = new THREE.CylinderGeometry(0, 1, 5, 8, 8);
-        var arrow_m = new THREE.Mesh(arrow_g, material_line);
-        arrow_m.position.set(x,y,z);
-        var line_unitv = new THREE.Vector3(x-i, y-j, z-k);
-        arrow_m.quaternion.setFromUnitVectors(
-            new THREE.Vector3(0,1,0), 
-            line_unitv.normalize()
-        )
-
-        line.add(arrow_m);
-        return line;
-    }
+    // Axis
     var origin = new THREE.Vector3();
     scene.add(new Axis(origin, new THREE.Vector3(10,0,0), 0,10,'Time','red',[10,5,1]));
     scene.add(new Axis(origin, new THREE.Vector3(0,10,0), 0,10,'y','green',[10,5,1]));
@@ -113,7 +92,7 @@ function(log, Axis, Navi){
         camera.updateProjectionMatrix();
     });
 
-    // navigator
+    // navigation input & response
     Navi.decorate(canvas);  // canvas now has 'zoom', 'rotate' event
 
     // zoom

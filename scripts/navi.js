@@ -1,3 +1,5 @@
+// navigation input events
+// on a DOM element (that has: wheel, mousedown, mousemove)
 define(function(){
     var zoomRatio = 0.01;
     var rotateRatio = 0.1;
