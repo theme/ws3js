@@ -127,10 +127,6 @@ function(log, Axis, navinput){
     var tgtCube = mkCube(new THREE.Vector3, 0.1, 'red');
     scene.add(tgtCube);
 
-    canvas.addEventListener('panstop', function(e){
-
-    });
-
     canvas.addEventListener('pan', function(e){
         var camUp = new THREE.Vector3(0,1,0);
         var camRight = new THREE.Vector3(1,0,0);
