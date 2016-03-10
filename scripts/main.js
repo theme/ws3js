@@ -113,48 +113,25 @@ function(log, Axis, Navi){
         camera.updateProjectionMatrix();
     });
 
-    // listen navigator event
-    Navi.decorate(canvas);
+    // navigator
+    Navi.decorate(canvas);  // canvas now has 'zoom', 'rotate' event
+
+    // zoom
     canvas.addEventListener('zoom', function(e){
         var pos = camera.position;
         var u = pos.clone().normalize();
         camera.position.add(u.multiplyScalar(e.detail));
     });
 
-    // drag in canvas
-    canvas.cursor = {};
-
-    function onDragCanvas(e){
-        var cursor = canvas.cursor;
-        cursor.deltaClientX = e.clientX - cursor.prevClientX;
-        cursor.deltaClientY = e.clientY - cursor.prevClientY;
-        cursor.prevClientX = e.clientX;
-        cursor.prevClientY = e.clientY;
-    }
-
-    function onMouseDownCanvas(e){
-        var cursor = canvas.cursor;
-        cursor.prevClientX = e.clientX;
-        cursor.prevClientY = e.clientY;
-
-        // when mouse down, register drag event
-        var onMouseMoveCanvas = function(e){
-            onDragCanvas(e);
-        };
-        canvas.addEventListener("mousemove", onMouseMoveCanvas);
-
-        // when mouse up / out, un-register drag event
-        var onMouseOutCanvas = function(e){
-            canvas.cursor.deltaClientX = 0;
-            canvas.cursor.deltaClientY = 0;
-            canvas.removeEventListener("mousemove", onMouseMoveCanvas);
-            canvas.removeEventListener("mouseout", onMouseOutCanvas);
-            canvas.removeEventListener("mouseup", onMouseOutCanvas);
-        };
-        canvas.addEventListener("mouseup", onMouseOutCanvas );
-        canvas.addEventListener("mouseout", onMouseOutCanvas);
-    }
-    canvas.addEventListener("mousedown", onMouseDownCanvas);
+    // rotate
+    canvas.addEventListener('rotate', function(e){
+        var pos = camera.position;
+        camera.position.applyAxisAngle(
+            new THREE.Vector3(0,1,0),
+            e.detail
+        );
+        camera.lookAt(scene.position);
+    });
 
     // log fps
     var msec = 0;
@@ -179,13 +156,6 @@ function(log, Axis, Navi){
             }
         } );
 
-        // drag camera, according to canvas mouseDown-Move event
-        if ( typeof canvas.cursor.deltaClientX === "number"){
-            var pos = camera.position;
-
-            camera.position.x = pos.x + canvas.cursor.deltaClientX;
-            // log(camera.position.x);
-        }
         // fps();
     }
 
