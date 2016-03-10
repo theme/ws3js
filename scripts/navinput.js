@@ -3,6 +3,7 @@
 define(function(){
     var zoomRatio = 0.01;
     var rotateRatio = 0.1;
+    var panRatio = 0.1;
     var cursor = {};
 
     function decorate(el){
@@ -10,6 +11,18 @@ define(function(){
         function dispatch(el, na, val){
             el.dispatchEvent(new CustomEvent(na, {'detail': val}));
         }
+
+        var spaceKey = false;
+        document.addEventListener('keydown', function(e){
+            if(e.keyCode == 32) spaceKey = true;
+        });
+        document.addEventListener('keyup', function(e){
+            if(e.keyCode == 32) {
+                spaceKey = false;
+                dispatch(el, 'panstop');
+            }
+        });
+
         // wheel zoom
         el.addEventListener('wheel', function(e){
             dispatch(el, 'zoom', e.deltaY * zoomRatio);
@@ -21,7 +34,13 @@ define(function(){
             cursor.deltaClientY = e.clientY - cursor.prevClientY;
             cursor.prevClientX = e.clientX;
             cursor.prevClientY = e.clientY;
-            dispatch(el,'rotate', cursor.deltaClientX * rotateRatio);
+            if(!spaceKey)
+                dispatch(el,'rotate', cursor.deltaClientX * rotateRatio);
+            else
+                dispatch(el,'pan', {
+                    deltaX: cursor.deltaClientX * panRatio,
+                    deltaY: cursor.deltaClientY * panRatio,
+                });
         }
 
         function onMouseDown(e){

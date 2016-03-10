@@ -37,11 +37,17 @@ function(log, Axis, navinput){
     // scene objects parent
     
     // cube
-    function mkCube(){
-
-        var geometry = new THREE.BoxGeometry( 5, 6, 10 );
-        var mesh = new THREE.MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.4 } );
+    function mkCube(pos, s, c){
+        var color = ( c !== undefined ) ? c : 0x00ff00;
+        var size = ( s !== undefined ) ? s : 1;
+        var geometry = new THREE.BoxGeometry( size*5, size*6, size*10 );
+        var mesh = new THREE.MeshBasicMaterial(
+            { color: color,
+                transparent: true,
+                opacity: 0.4
+            });
         var cube = new THREE.Mesh( geometry, mesh );
+        cube.position.copy(pos);
 
         // edge helper
         var egh = new THREE.EdgesHelper( cube, 0x00ffff );
@@ -55,7 +61,7 @@ function(log, Axis, navinput){
 
         return cube;
     }
-    var cube = mkCube();
+    var cube = mkCube(new THREE.Vector3());
     scene.add( cube );
 
     // Axis
@@ -94,22 +100,50 @@ function(log, Axis, navinput){
 
     // navigation input & response
     navinput.decorate(canvas);  // canvas now has 'zoom', 'rotate' event
+    camera.tgt = new THREE.Vector3();
 
     // zoom
     canvas.addEventListener('zoom', function(e){
-        var pos = camera.position;
-        var u = pos.clone().normalize();
-        camera.position.add(u.multiplyScalar(e.detail));
+        var v = camera.position.clone().sub(camera.tgt);
+        var u = v.clone().normalize();
+        var pos = camera.position.clone();
+        pos.add(u.multiplyScalar(e.detail));
+        v = pos.clone().sub(camera.tgt);
+        if( v.length() > 0.1 )
+            camera.position.copy(pos);
     });
-
     // rotate
     canvas.addEventListener('rotate', function(e){
-        var pos = camera.position;
-        camera.position.applyAxisAngle(
+        var v = camera.position.clone().sub(camera.tgt);
+        v.applyAxisAngle(
             new THREE.Vector3(0,1,0),
             e.detail
         );
-        camera.lookAt(scene.position);
+        camera.position.copy(v.add(camera.tgt));
+        camera.lookAt(camera.tgt);
+        log('rotate');
+    });
+    // pan
+    var tgtCube = mkCube(new THREE.Vector3, 0.1, 'red');
+    scene.add(tgtCube);
+
+    canvas.addEventListener('panstop', function(e){
+
+    });
+
+    canvas.addEventListener('pan', function(e){
+        var camUp = new THREE.Vector3(0,1,0);
+        var camRight = new THREE.Vector3(1,0,0);
+        var q = new THREE.Quaternion();
+        q.setFromRotationMatrix(camera.matrixWorld);
+
+        camUp.applyQuaternion(q);
+        camRight.applyQuaternion(q);
+
+        var v = camera.tgt.clone().sub(camera.position);
+        camera.position.add(camRight.multiplyScalar(e.detail.deltaX));
+        camera.tgt.copy(v.add(camera.position));
+        tgtCube.position.copy(camera.tgt);
     });
 
     // log fps
