@@ -138,21 +138,25 @@ function(log, Axis, navinput){
 
         var v = camera.tgt.clone().sub(camera.position);
         camera.position.add(camRight.multiplyScalar(e.detail.deltaX));
+        camera.position.add(camUp.multiplyScalar(-e.detail.deltaY));
         camera.tgt.copy(v.add(camera.position));
         tgtCube.position.copy(camera.tgt);
     });
 
     // instantiate a loader
-    var loader = new THREE.JSONLoader();
+    function loadBlenderJSON(fn, x,y,z){
+        var loader = new THREE.JSONLoader();
 
-    loader.load( 'models/cube.json',
-        function ( geometry, materials ) {
-            var material = new THREE.MultiMaterial( materials );
-            var object = new THREE.Mesh( geometry, material );
-            object.position.set(0,4,0);
-            scene.add( object );
-        }
-    );
+        loader.load( fn,
+                    function ( geometry, materials ) {
+                        var material = new THREE.MultiMaterial( materials );
+                        var object = new THREE.Mesh( geometry, material );
+                        object.position.set(x,y,z);
+                        scene.add( object );
+                    }
+                   );
+    }
+    loadBlenderJSON('models/untitled.json', 0,0,0);
 
     // log fps
     var msec = 0;
