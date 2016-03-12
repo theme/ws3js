@@ -149,13 +149,17 @@ function(log, Axis, navinput){
         scene.add(collada.scene);
         // scene.fog = new THREE.Fog( 0xffffff, 2000, 10000 );
 
-        kfAnimations = collada.animations.map(function(a){
-            return new THREE.KeyFrameAnimation(a);
+        kfAnimations = [];
+        collada.animations.map(function(a){
+            kfAnimations.push(new THREE.KeyFrameAnimation(a));
+            return a;
         });
         kfAnimations.map(function(a){ 
             a.loop = true;
             a.play();
         });
+        log(collada);
+        log(kfAnimations);
         // mixer = new THREE.AnimationMixer( scene );
         // mixer.clipAction( sceneAnimationClip ).play();
 
