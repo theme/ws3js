@@ -1,9 +1,10 @@
 require(['log','axis','navinput'],
 function(log, Axis, navinput){
     // a test scene
-    var camera, scene, renderer, canvas, callbackID;
-    var mixer;
+    var camera, scene, renderer, canvas;
+
     var clock = new THREE.Clock();
+    var kfAnimations;
     
     // helper: make a cube
     function mkCube(pos, s, c){
@@ -64,6 +65,7 @@ function(log, Axis, navinput){
         var cameraRatio = 2 * 50 / window.innerWidth;
         camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 200 );
         camera.position.set( 10, 5, 10 );
+
 
         // reset view
         resetCameraView();
@@ -130,21 +132,32 @@ function(log, Axis, navinput){
             }
         } );
 
-        if( mixer ) {
+        if( kfAnimations) {
             // console.log( "updating mixer by " + delta );
-            mixer.update( delta );
+            kfAnimations.map( function(a){
+                a.update(delta);
+            });
         }    
     }
 
     // load scene & start render
-    var loader = new THREE.ObjectLoader();
-    loader.load( "models/untitled.json", function ( loadedScene ) {
-        scene = loadedScene;
+    var loader = new THREE.ColladaLoader();
+    loader.load( "models/untitled.dae", function ( collada ) {
+        // scene = loadedScene;
+        // scene
+        scene = new THREE.Scene();
+        scene.add(collada.scene);
         // scene.fog = new THREE.Fog( 0xffffff, 2000, 10000 );
 
-        sceneAnimationClip = loadedScene.animations[0];
-        mixer = new THREE.AnimationMixer( scene );
-        mixer.clipAction( sceneAnimationClip ).play();
+        kfAnimations = collada.animations.map(function(a){
+            return new THREE.KeyFrameAnimation(a);
+        });
+        kfAnimations.map(function(a){ 
+            a.loop = true;
+            a.play();
+        });
+        // mixer = new THREE.AnimationMixer( scene );
+        // mixer.clipAction( sceneAnimationClip ).play();
 
         // a cube
         scene.add( mkCube(new THREE.Vector3()));
@@ -157,6 +170,8 @@ function(log, Axis, navinput){
         init();
         scene.add( camera );
         animate();
-    } );
+    }, function(xhr){
+        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+    });
 });
 
