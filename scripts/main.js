@@ -2,41 +2,10 @@ require(['log','axis','navinput'],
 function(log, Axis, navinput){
     // a test scene
     var camera, scene, renderer, canvas, callbackID;
-
-    // canvas
-    function mkCanvas( elid ) {
-        if (typeof elid === "string"){
-            log( "render tgt: ", elid);
-            canvas = document.getElementById(elid);
-        }
-        else {
-            log( "warn : render tgt not found : ", elid);
-            canvas = document.createElement("canvas");
-            document.body.appendChild(canvas);
-        }
-        canvas.width  = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-    };
-    mkCanvas("3jscanvas");
-
-    // renderer
-    renderer = new THREE.WebGLRenderer({canvas: canvas});
-    renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
-    renderer.setClearColor( new THREE.Color(0x003366) );    // bg color
-
-    // scene
-    scene = new THREE.Scene();
-
-    // camera ( in the scene )
-    var cameraRatio = 2* 50/window.innerWidth;
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 200 );
-    camera.position.set( 10, 5, 10 );
-    camera.lookAt(scene.position); // (0,0,0)
-    log("cameraRatio: ", cameraRatio);
-
-    // scene objects parent
+    var mixer;
+    var clock = new THREE.Clock();
     
-    // cube
+    // helper: make a cube
     function mkCube(pos, s, c){
         var color = ( c !== undefined ) ? c : 0x00ff00;
         var size = ( s !== undefined ) ? s : 1;
@@ -52,7 +21,6 @@ function(log, Axis, navinput){
         // edge helper
         var egh = new THREE.EdgesHelper( cube, 0x00ffff );
         egh.matrix = new THREE.Matrix4();
-
         cube.add(egh);
 
         cube.update = function(){
@@ -61,129 +29,134 @@ function(log, Axis, navinput){
 
         return cube;
     }
-    var cube = mkCube(new THREE.Vector3());
-    scene.add( cube );
 
-    // Axis
-    var origin = new THREE.Vector3();
-    scene.add(new Axis(origin, new THREE.Vector3(10,0,0), 0,10,'Time','red',[10,5,1]));
-    scene.add(new Axis(origin, new THREE.Vector3(0,10,0), 0,10,'y','green',[10,5,1]));
-    scene.add(new Axis(origin, new THREE.Vector3(0,0,10), 0,10,'z','blue',[10,5,1]));
-
-    // event point
-    function mkEventPoint(time, place, story){
-        // calculate x,y,z
-
-        // make 
-    }
-
-    function onResize(element, callback) {  // delayed resize watcher
+    // helper: Watch element resize, call callback
+    function watchResize(element, callback) {
         var height = element.clientHeight;
         var width  = element.clientWidth;
-
-        return setInterval(function() {
-            if (element.clientHeight != height || element.clientWidth != width) {
+        return setInterval(function() {     // add watcher
+            if (element.clientHeight != height
+                || element.clientWidth != width) {
                 height = element.clientHeight;
                 width  = element.clientWidth;
                 callback();
-            }
+                }
         }, 500);
     }
 
-    onResize(canvas, function () {  // handle canvas resize
+    function resetCameraView(){
         canvas.width  = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
         renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
         camera.updateProjectionMatrix();
-    });
-
-    // navigation input & response
-    navinput.decorate(canvas);  // canvas now has 'zoom', 'rotate' event
-    camera.tgt = new THREE.Vector3();
-
-    // zoom
-    canvas.addEventListener('zoom', function(e){
-        var v = camera.position.clone().sub(camera.tgt);
-        var u = v.clone().normalize();
-        var pos = camera.position.clone();
-        pos.add(u.multiplyScalar(e.detail));
-        v = pos.clone().sub(camera.tgt);
-        if( v.length() > 0.1 )
-            camera.position.copy(pos);
-    });
-    // rotate
-    canvas.addEventListener('rotate', function(e){
-        var v = camera.position.clone().sub(camera.tgt);
-        v.applyAxisAngle(
-            new THREE.Vector3(0,1,0),
-            e.detail
-        );
-        camera.position.copy(v.add(camera.tgt));
-        camera.lookAt(camera.tgt);
-        log('rotate');
-    });
-    // pan
-    var tgtCube = mkCube(new THREE.Vector3, 0.1, 'red');
-    scene.add(tgtCube);
-
-    canvas.addEventListener('pan', function(e){
-        var camUp = new THREE.Vector3(0,1,0);
-        var camRight = new THREE.Vector3(1,0,0);
-        var q = new THREE.Quaternion();
-        q.setFromRotationMatrix(camera.matrixWorld);
-
-        camUp.applyQuaternion(q);
-        camRight.applyQuaternion(q);
-
-        var v = camera.tgt.clone().sub(camera.position);
-        camera.position.add(camRight.multiplyScalar(e.detail.deltaX));
-        camera.position.add(camUp.multiplyScalar(-e.detail.deltaY));
-        camera.tgt.copy(v.add(camera.position));
-        tgtCube.position.copy(camera.tgt);
-    });
-
-    // instantiate a loader
-    function loadBlenderJSON(fn, x,y,z){
-        var loader = new THREE.JSONLoader();
-
-        loader.load( fn,
-                    function ( geometry, materials ) {
-                        var material = new THREE.MultiMaterial( materials );
-                        var object = new THREE.Mesh( geometry, material );
-                        object.position.set(x,y,z);
-                        scene.add( object );
-                    }
-                   );
     }
-    loadBlenderJSON('models/untitled.json', 0,0,0);
 
-    // log fps
-    var msec = 0;
-    var frame = 0;
-    function fps() {
-        frame += 1;
-        if (Date.now() - msec > 1000){ // new seconds
-            log("fps: " + frame);
-            frame = 0;
-            msec = Date.now();
-        }
+    function init(){
+        // canvas
+        canvas = document.getElementById("3jscanvas");
+
+        // renderer
+        renderer = new THREE.WebGLRenderer({canvas:canvas});
+        renderer.setClearColor(new THREE.Color(0x003366));
+
+        // camera ( in the scene )
+        var cameraRatio = 2 * 50 / window.innerWidth;
+        camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 200 );
+        camera.position.set( 10, 5, 10 );
+
+        // reset view
+        resetCameraView();
+
+        // Watch canvas resize
+        watchResize(canvas, resetCameraView);
+
+        // navigation input & camara control
+        navinput.decorate(canvas);  // canvas now has 'zoom', 'rotate' event
+        camera.tgt = new THREE.Vector3();
+        camera.lookAt(camera.tgt);
+
+        // zoom
+        canvas.addEventListener('zoom', function(e){
+            var v = camera.position.clone().sub(camera.tgt);
+            var u = v.clone().normalize();
+            var pos = camera.position.clone();
+            pos.add(u.multiplyScalar(e.detail));
+            v = pos.clone().sub(camera.tgt);
+            if( v.length() > 0.1 )
+                camera.position.copy(pos);
+        });
+        // rotate
+        canvas.addEventListener('rotate', function(e){
+            var v = camera.position.clone().sub(camera.tgt);
+            v.applyAxisAngle(
+                new THREE.Vector3(0,1,0),
+                e.detail
+            );
+            camera.position.copy(v.add(camera.tgt));
+            camera.lookAt(camera.tgt);
+        });
+        // pan
+        canvas.addEventListener('pan', function(e){
+            var camUp = new THREE.Vector3(0,1,0);
+            var camRight = new THREE.Vector3(1,0,0);
+            var q = new THREE.Quaternion();
+            q.setFromRotationMatrix(camera.matrixWorld);
+
+            camUp.applyQuaternion(q);
+            camRight.applyQuaternion(q);
+
+            var v = camera.tgt.clone().sub(camera.position);
+            camera.position.add(camRight.multiplyScalar(e.detail.deltaX));
+            camera.position.add(camUp.multiplyScalar(-e.detail.deltaY));
+            camera.tgt.copy(v.add(camera.position));
+        });
+    }
+
+    function animate(){
+        requestAnimationFrame( animate);
+        render();
     }
 
     // render loop: self reinstall every frame
     function render() {
-        requestAnimationFrame( render );
+        var delta = 0.75 * clock.getDelta();
         renderer.render( scene, camera );
 
         scene.traverse( function(obj){ 
-            if( obj.hasOwnProperty("update") && typeof obj.update === "function" ){
+            if( obj.hasOwnProperty("update")
+               && typeof obj.update === "function" ){
                 obj.update(); 
             }
         } );
 
-        // fps();
+        if( mixer ) {
+            // console.log( "updating mixer by " + delta );
+            mixer.update( delta );
+        }    
     }
 
-    render();
+    // load scene & start render
+    var loader = new THREE.ObjectLoader();
+    loader.load( "models/untitled.json", function ( loadedScene ) {
+        scene = loadedScene;
+        // scene.fog = new THREE.Fog( 0xffffff, 2000, 10000 );
+
+        sceneAnimationClip = loadedScene.animations[0];
+        mixer = new THREE.AnimationMixer( scene );
+        mixer.clipAction( sceneAnimationClip ).play();
+
+        // a cube
+        scene.add( mkCube(new THREE.Vector3()));
+        // Axis
+        var origin = new THREE.Vector3();
+        scene.add(new Axis(origin, new THREE.Vector3(10,0,0), 0,10,'Time','red',[10,5,1]));
+        scene.add(new Axis(origin, new THREE.Vector3(0,10,0), 0,10,'y','green',[10,5,1]));
+        scene.add(new Axis(origin, new THREE.Vector3(0,0,10), 0,10,'z','blue',[10,5,1]));
+        
+        init();
+        scene.add( camera );
+        animate();
+    } );
 });
 
