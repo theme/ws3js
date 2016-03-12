@@ -122,7 +122,7 @@ function(log, Axis, navinput){
 
     // render loop: self reinstall every frame
     function render() {
-        var delta = 0.75 * clock.getDelta();
+        var delta = 750 * clock.getDelta();
         renderer.render( scene, camera );
 
         scene.traverse( function(obj){ 
