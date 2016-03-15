@@ -1,14 +1,36 @@
 {
-    "images":[],
+    "textures":[],
+    "object":{
+        "children":[{
+            "name":"Cube",
+            "uuid":"F29D1AC4-D789-3D8E-BAB5-59DC1B758FE2",
+            "matrix":[0,0,1,0,1,0,-0,0,0,1,0,0,0,5,0,1],
+            "visible":true,
+            "type":"Mesh",
+            "castShadow":true,
+            "receiveShadow":true,
+            "geometry":"EFA44BDC-AE0A-33E8-8460-C63A8325F310"
+        }],
+        "uuid":"EF80339C-F870-45F2-AFC4-B6DB96C3F3A1",
+        "type":"Scene",
+        "matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+    },
+    "metadata":{
+        "version":4.4,
+        "generator":"io_three",
+        "type":"Object",
+        "sourceFile":"untitled.blend"
+    },
+    "materials":[],
     "animations":[{
         "tracks":[{
             "type":"vector3",
             "keys":[{
-                "value":[0.242061,4.03625,0.010761],
+                "value":[0,5,0],
                 "time":0
             },{
-                "value":[0.242061,4.03625,0.010761],
-                "time":250
+                "value":[0,5,0],
+                "time":249
             }],
             "name":"Cube.position"
         },{
@@ -18,7 +40,7 @@
                 "time":0
             },{
                 "value":[1,1,1],
-                "time":250
+                "time":249
             }],
             "name":"Cube.scale"
         },{
@@ -27,8 +49,8 @@
                 "value":[0,0.707107,0.707107,0],
                 "time":0
             },{
-                "value":[-0,0.707107,0.707107,0],
-                "time":250
+                "value":[-0.5,-0.5,-0.5,0.5],
+                "time":249
             }],
             "name":"Cube.quaternion"
         }],
@@ -36,61 +58,39 @@
         "fps":24
     }],
     "geometries":[{
-        "uuid":"1CE7179B-5060-3970-A74B-48BACECBF06E",
-        "materials":[{
-            "depthTest":true,
-            "DbgColor":15658734,
-            "colorEmissive":[0,0,0],
-            "visible":true,
-            "colorDiffuse":[0.161652,0.517651,0.64],
-            "blending":"NormalBlending",
-            "shading":"basic",
-            "DbgName":"Material",
-            "wireframe":false,
-            "transparent":false,
-            "DbgIndex":0,
-            "opacity":1,
-            "depthWrite":true
-        }],
+        "uuid":"EFA44BDC-AE0A-33E8-8460-C63A8325F310",
+        "type":"Geometry",
         "data":{
+            "normals":[-0.577349,0.577349,-0.577349,-0.577349,-0.577349,-0.577349,-0.577349,-0.577349,0.577349,-0.577349,0.577349,0.577349,0.577349,0.577349,0.577349,0.577349,0.577349,-0.577349,0.577349,-0.577349,0.577349,0.577349,-0.577349,-0.577349],
             "uvs":[],
-            "name":"Cube.002Geometry.8",
-            "vertices":[-1,-1,-1,-1,-1,1,-1,1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1,1,1,1],
-            "faces":[35,2,0,1,3,0,0,1,2,3,35,3,7,6,2,0,3,4,5,0,35,7,5,4,6,0,4,6,7,5,35,0,4,5,1,0,1,7,6,2,35,0,2,6,4,0,1,0,5,7,35,5,7,3,1,0,6,4,3,2],
             "metadata":{
+                "normals":8,
+                "version":3,
+                "materials":1,
                 "uvs":0,
                 "generator":"io_three",
                 "vertices":8,
-                "faces":6,
-                "materials":1,
-                "version":3,
-                "normals":8
+                "faces":6
             },
-            "normals":[-0.577349,0.577349,-0.577349,-0.577349,-0.577349,-0.577349,-0.577349,-0.577349,0.577349,-0.577349,0.577349,0.577349,0.577349,0.577349,0.577349,0.577349,0.577349,-0.577349,0.577349,-0.577349,0.577349,0.577349,-0.577349,-0.577349]
+            "vertices":[-1,-1,-1,-1,-1,1,-1,1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,-1,1,1,1],
+            "faces":[35,2,0,1,3,0,0,1,2,3,35,3,7,6,2,0,3,4,5,0,35,7,5,4,6,0,4,6,7,5,35,0,4,5,1,0,1,7,6,2,35,0,2,6,4,0,1,0,5,7,35,5,7,3,1,0,6,4,3,2],
+            "name":"Cube.002Geometry.13"
         },
-        "type":"Geometry"
-    }],
-    "textures":[],
-    "materials":[],
-    "metadata":{
-        "type":"Object",
-        "version":4.4,
-        "sourceFile":"untitled.blend",
-        "generator":"io_three"
-    },
-    "object":{
-        "uuid":"EFBA1503-9B12-4525-908C-D174931AEAA8",
-        "type":"Scene",
-        "children":[{
-            "name":"Cube",
-            "uuid":"F29D1AC4-D789-3D8E-BAB5-59DC1B758FE2",
-            "matrix":[0.21588,0,-0.97642,0,-0.97642,0,-0.21588,0,0,1,0,0,0.242061,4.03625,0.010761,1],
+        "materials":[{
+            "transparent":false,
+            "DbgName":"Material",
+            "DbgColor":15658734,
+            "depthWrite":true,
+            "blending":"NormalBlending",
+            "shading":"basic",
+            "depthTest":true,
             "visible":true,
-            "type":"Mesh",
-            "castShadow":true,
-            "receiveShadow":true,
-            "geometry":"1CE7179B-5060-3970-A74B-48BACECBF06E"
-        }],
-        "matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-    }
+            "opacity":1,
+            "colorEmissive":[0,0,0],
+            "DbgIndex":0,
+            "wireframe":false,
+            "colorDiffuse":[0.161652,0.517651,0.64]
+        }]
+    }],
+    "images":[]
 }

@@ -4,7 +4,7 @@ function(log, Axis, navinput){
     var camera, scene, renderer, canvas;
 
     var clock = new THREE.Clock();
-    var kfAnimations;
+    var mixer;
     
     // helper: make a cube
     function mkCube(pos, s, c){
@@ -93,7 +93,7 @@ function(log, Axis, navinput){
             var v = camera.position.clone().sub(camera.tgt);
             v.applyAxisAngle(
                 new THREE.Vector3(0,1,0),
-                e.detail
+                -e.detail
             );
             camera.position.copy(v.add(camera.tgt));
             camera.lookAt(camera.tgt);
@@ -122,7 +122,7 @@ function(log, Axis, navinput){
 
     // render loop: self reinstall every frame
     function render() {
-        var delta = 750 * clock.getDelta();
+        var delta = 10 * clock.getDelta();
         renderer.render( scene, camera );
 
         scene.traverse( function(obj){ 
@@ -132,36 +132,23 @@ function(log, Axis, navinput){
             }
         } );
 
-        if( kfAnimations) {
-            // console.log( "updating mixer by " + delta );
-            kfAnimations.map( function(a){
-                a.update(delta);
-            });
-        }    
+        if( mixer ) {
+            //console.log( "updating mixer by " + delta );
+            mixer.update( delta );
+        }
     }
 
     // load scene & start render
-    var loader = new THREE.ColladaLoader();
-    loader.load( "models/untitled.dae", function ( collada ) {
-        // scene = loadedScene;
-        // scene
-        scene = new THREE.Scene();
-        scene.add(collada.scene);
-        // scene.fog = new THREE.Fog( 0xffffff, 2000, 10000 );
+    var loader = new THREE.ObjectLoader();
+    loader.load( "models/untitled.json", function ( loadedScene ) {
 
-        kfAnimations = [];
-        collada.animations.map(function(a){
-            kfAnimations.push(new THREE.KeyFrameAnimation(a));
-            return a;
+        scene = loadedScene;
+        scene.fog = new THREE.Fog( 0xffffff, 2000, 10000 );
+
+        mixer = new THREE.AnimationMixer( scene );
+        loadedScene.animations.map(function(a){
+            mixer.clipAction(a).play();
         });
-        kfAnimations.map(function(a){ 
-            a.loop = true;
-            a.play();
-        });
-        log(collada);
-        log(kfAnimations);
-        // mixer = new THREE.AnimationMixer( scene );
-        // mixer.clipAction( sceneAnimationClip ).play();
 
         // a cube
         scene.add( mkCube(new THREE.Vector3()));
