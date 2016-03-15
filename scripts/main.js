@@ -4,7 +4,9 @@ function(log, Axis, navinput){
     var camera, scene, renderer, canvas;
 
     var clock = new THREE.Clock();
+    var stopTime = 5;
     var mixer;
+    var clipActions;
     
     // helper: make a cube
     function mkCube(pos, s, c){
@@ -130,11 +132,18 @@ function(log, Axis, navinput){
                && typeof obj.update === "function" ){
                 obj.update(); 
             }
-        } );
+        });
 
         if( mixer ) {
-            //console.log( "updating mixer by " + delta );
+            // console.log( "updating mixer by " + delta );
             mixer.update( delta );
+        }
+
+        // stop play after stopTime secondes
+        if (clock.elapsedTime < stopTime){
+            // log(clock.elapsedTime);
+        } else {
+            clipActions.map(function(c){ c.stop(); });
         }
     }
 
@@ -146,12 +155,14 @@ function(log, Axis, navinput){
         scene.fog = new THREE.Fog( 0xffffff, 2000, 10000 );
 
         mixer = new THREE.AnimationMixer( scene );
-        loadedScene.animations.map(function(a){
-            mixer.clipAction(a).play();
+        clipActions = loadedScene.animations.map(function(a){
+            var clip = mixer.clipAction(a);
+            clip.play();
+            return clip;
         });
 
         // a cube
-        scene.add( mkCube(new THREE.Vector3()));
+        // scene.add( mkCube(new THREE.Vector3()));
         // Axis
         var origin = new THREE.Vector3();
         scene.add(new Axis(origin, new THREE.Vector3(10,0,0), 0,10,'Time','red',[10,5,1]));
