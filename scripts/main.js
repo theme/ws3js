@@ -4,7 +4,7 @@ function(log, Axis, navinput){
     var camera, scene, renderer, canvas;
 
     var clock = new THREE.Clock();
-    var stopTime = 5;
+    var stopTime = 50;
     var mixer;
     var clipActions;
     
@@ -124,7 +124,7 @@ function(log, Axis, navinput){
 
     // render loop: self reinstall every frame
     function render() {
-        var delta = 10 * clock.getDelta();
+        var delta = 1 * clock.getDelta();
         renderer.render( scene, camera );
 
         scene.traverse( function(obj){ 
