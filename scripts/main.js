@@ -64,23 +64,22 @@ function(log, Axis, navinput){
 
         // camera ( in the scene )
         // Perspective
-        // camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
-        // camera.update = function() {
-        //     camera.aspect = canvas.clientWidth / canvas.clientHeight;
-        //     camera.updateProjectionMatrix();
-        // };
+        var pCam = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
+        pCam.update = function() {
+            pCam.aspect=canvas.clientWidth/canvas.clientHeight;
+            pCam.updateProjectionMatrix();
+        };
 
         // Orthographic
         var r = 50 / canvas.clientWidth;
-        camera = new THREE.OrthographicCamera( r * canvas.clientWidth / 2, - r * canvas.clientWidth / 2, r * canvas.clientHeight / 2, - r * canvas.clientHeight /2, 1, 100);
-        camera.update = function() {
-            camera.updateProjectionMatrix();
+        oCam = new THREE.OrthographicCamera( r * canvas.clientWidth / 2, - r * canvas.clientWidth / 2, r * canvas.clientHeight / 2, - r * canvas.clientHeight /2, 1, 100);
+        oCam.update = function() {
+            oCam.updateProjectionMatrix();
         };
 
-        scene.add(camera);
-        log(camera);
-        camera.position.set( 10, 5, 0 );
+        camera = oCam;
 
+        camera.position.set( 10, 5, 0 );
 
         // reset view
         resetCameraView();
