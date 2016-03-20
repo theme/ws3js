@@ -4,7 +4,7 @@ function(log, Axis, navinput){
     var camera, scene, renderer, canvas;
 
     var clock = new THREE.Clock();
-    var stopTime = 50;
+    var stopTime = 5;
     var mixer;
     var clipActions;
     
@@ -51,8 +51,7 @@ function(log, Axis, navinput){
         canvas.width  = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
         renderer.setViewport(0, 0, canvas.clientWidth, canvas.clientHeight);
-        camera.aspect = canvas.clientWidth / canvas.clientHeight;
-        camera.updateProjectionMatrix();
+        camera.update();
     }
 
     function init(){
@@ -64,9 +63,23 @@ function(log, Axis, navinput){
         renderer.setClearColor(new THREE.Color(0x003366));
 
         // camera ( in the scene )
-        var cameraRatio = 2 * 50 / window.innerWidth;
-        camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 200 );
-        camera.position.set( 10, 5, 10 );
+        // Perspective
+        // camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
+        // camera.update = function() {
+        //     camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        //     camera.updateProjectionMatrix();
+        // };
+
+        // Orthographic
+        var r = 50 / canvas.clientWidth;
+        camera = new THREE.OrthographicCamera( r * canvas.clientWidth / 2, - r * canvas.clientWidth / 2, r * canvas.clientHeight / 2, - r * canvas.clientHeight /2, 1, 100);
+        camera.update = function() {
+            camera.updateProjectionMatrix();
+        };
+
+        scene.add(camera);
+        log(camera);
+        camera.position.set( 10, 5, 0 );
 
 
         // reset view
