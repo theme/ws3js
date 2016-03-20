@@ -2,6 +2,7 @@ require(['log','axis','navinput'],
 function(log, Axis, navinput){
     // a test scene
     var camera, scene, renderer, canvas;
+    var oCam, pCam;
 
     var clock = new THREE.Clock();
     var stopTime = 5;
@@ -64,17 +65,18 @@ function(log, Axis, navinput){
 
         // camera ( in the scene )
         // Perspective
-        var pCam = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
+        pCam = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
         pCam.update = function() {
             pCam.aspect=canvas.clientWidth/canvas.clientHeight;
             pCam.updateProjectionMatrix();
         };
 
         // Orthographic
-        var r = 50 / canvas.clientWidth;
-        oCam = new THREE.OrthographicCamera( r * canvas.clientWidth / 2, - r * canvas.clientWidth / 2, r * canvas.clientHeight / 2, - r * canvas.clientHeight /2, 1, 100);
+        var r = 5000 / canvas.clientWidth;
+        oCam = new THREE.OrthographicCamera( canvas.clientWidth / -2, canvas.clientWidth / 2, canvas.clientHeight / 2, canvas.clientHeight /-2, 1, 100);
         oCam.update = function() {
             oCam.updateProjectionMatrix();
+            oCam.zoom = r;
         };
 
         camera = oCam;
