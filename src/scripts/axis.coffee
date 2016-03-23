@@ -5,10 +5,10 @@ define ['log'], (log) ->
             THREE.Object3D.call @
             startPoint = a
             endPoint = b
-            @lower = m ? m : 0
-            @upper = n ? n : 0
-            @name = n ? name : ''
-            @color = c c : 'yellow'
+            @lower = if m then m else 0
+            @upper = if n then n else 0
+            @name = if name then name else ''
+            @color = if c then c else 'yellow'
 
             # property
             @vector = endPoint.clone().sub(startPoint)

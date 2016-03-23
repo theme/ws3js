@@ -1,72 +1,75 @@
-define(['log'], function(log){
-    // a -> b, Range[m,n], name, color, rulerMarks[r1, r2 ...] 
-    var Axis = function(a, b, m, n, name, c, r){
-        // core
+(function() {
+  var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
+  define(['log'], function(log) {
+    var Axis, V3;
+    V3 = THREE.Vector3;
+    Axis = (function(superClass) {
+      extend(Axis, superClass);
+
+      function Axis(a, b, m, n, name, c, r) {
+        var arrow, arrowGeo, endPoint, line, lineGeo, marks, material, startPoint;
+        if (a == null) {
+          a = new V3;
+        }
+        if (b == null) {
+          b = new V3(10, 0, 0);
+        }
         THREE.Object3D.call(this);
-
-        var startPoint = ( a !== undefined ) ? a.clone() : new THREE.Vector3();
-        var endPoint = ( b !== undefined ) ? b.clone() : new THREE.Vector3(10,0,0);
-        this.lower = ( m !== undefined) ? m : 0;
-        this.upper = ( n !== undefined) ? n : 0;
-        this.name = ( name !== undefined) ? name : '';
-        this.color = ( c !== undefined) ? c : 'yellow';
-
-        // porperty
+        startPoint = a;
+        endPoint = b;
+        this.lower = m ? m : 0;
+        this.upper = n ? n : 0;
+        this.name = name ? name : '';
+        this.color = c ? c : 'yellow';
         this.vector = endPoint.clone().sub(startPoint);
         this.length = this.vector.length();
         this.rangeLength = this.upper - this.lower;
         this.scaleRatio = this.length / this.rangeLength;
-
-        // axis line
-        var material = new THREE.LineBasicMaterial({color:this.color});
-
-        var lineGeo = new THREE.Geometry();
+        material = new THREE.LineBasicMaterial({
+          color: this.color
+        });
+        lineGeo = new THREE.Geometry();
         lineGeo.vertices.push(startPoint, endPoint);
-        var line = new THREE.Line(lineGeo, material);
+        line = new THREE.Line(lineGeo, material);
         this.add(line);
-
-        // arraow and marks
-        var arrowGeo = new THREE.CylinderGeometry(0, 1, 5, 8, 8);
-        var arrow = new THREE.Mesh(arrowGeo, material);
-
-        arrow.position.set(0,2.5,0);  // move up, reset center
+        arrowGeo = new THREE.CylinderGeometry(0, 1, 5, 8, 8);
+        arrow = new THREE.Mesh(arrowGeo, material);
+        arrow.position.set(0, 2.5, 0);
         arrow.updateMatrix();
         arrow.geometry.applyMatrix(arrow.matrix);
         arrow.matrix.identity();
         arrow.position.copy(endPoint);
-        arrow.quaternion.setFromUnitVectors(
-            new THREE.Vector3(0,1,0), 
-            this.vector.normalize()
-        );
+        arrow.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), this.vector.normalize());
         this.add(arrow);
-
-        // ruler marks
-        var marks = new THREE.Object3D();
-        this.rulerMarks = (r !== undefined ) ?  r.sort(function(a,b){return a < b}) : [10,5,1]; 
-        var axis = this;
-        this.rulerMarks.map(function(u){    // for every ruler unit
-            var t = axis.rangeLength / u;
-            // draw the scale marks
-            for(var i = 0; i < t ; i++){
-                var lineGeo = new THREE.Geometry();
-                var y = i*u*axis.scaleRatio;
-                lineGeo.vertices.push(
-                    new THREE.Vector3(0, y, 0),
-                    new THREE.Vector3(u*0.1, y, 0)
-                );
-                marks.add(new THREE.Line(lineGeo, material));
-            }
+        marks = new THREE.Object3D();
+        this.rulerMarks = r ? r.sort(function(a, b) {
+          return a < b;
+        }) : [10, 5, 1];
+        this.rulerMarks.map(function(u) {
+          var j, ref, results;
+          (function() {
+            results = [];
+            for (var j = 0, ref = this.rangeLength / u; 0 <= ref ? j < ref : j > ref; 0 <= ref ? j++ : j--){ results.push(j); }
+            return results;
+          }).apply(this).map(function(i) {
+            var y;
+            lineGeo = new THREE.Geometry;
+            y = i * u * this.scaleRatio;
+            lineGeo.vertices.push(new THREE.Vector3(0, y, 0), new THREE.Vector3(u * 0.1, y, 0));
+            marks.add(new THREE.Line(lineGeo, material));
+          });
         });
-
-        marks.quaternion.setFromUnitVectors(
-            new THREE.Vector3(0,1,0), 
-            this.vector.normalize()
-        );
+        marks.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), this.vector.normalize());
         this.add(marks);
-    }
-    Axis.prototype = Object.create(THREE.Object3D.prototype);
-    Axis.prototype.constructor = Axis;
+        return;
+      }
 
+      return Axis;
+
+    })(THREE.Object3D);
     return Axis;
-});
+  });
 
+}).call(this);
