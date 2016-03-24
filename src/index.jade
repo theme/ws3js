@@ -1,0 +1,25 @@
+html(lang="en")
+    head
+        title ws3js
+        meta(charset="utf-8")
+        link(href="css/index.css", rel="stylesheet")
+    body
+        div#header
+            h2#app-name a Three.js test
+            form#url-form
+                input#showHideBtn(type="checkbox" checked)
+                span canvas
+                input#search-text(type="text",placeholder="URL", autofocus)
+
+        div#main
+            div.panel.row#row1
+                div.panel-body
+                    iframe#webpage(src="https://en.wikipedia.org/wiki/Main_Page")
+
+            div.panel.row#row2
+                div.panel-body
+                    canvas#3jscanvas(draggable)
+
+        script(src="scripts/lib/three.js")
+        script(src="scripts/lib/require.js", data-main="scripts/main")
+

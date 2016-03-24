@@ -9,47 +9,47 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'src/',
                     src: ['**/*.coffee' ],
-                    dest: 'src/',
+                    dest: 'pub/',
                     rename: function(dest,src){
                         return dest + src.replace(/.coffee$/, '.js');
                     }
                 }],
             }
         },
-        // jade: {
-        //     compile: {
-        //         options: {
-        //             pretty: true
-        //         },
-        //         files: [{
-        //             expand: true,
-        //             cwd: 'src/',
-        //             src: ['*|)}>#*.jade' ],
-        //             dest: 'src/',
-        //             rename: function(dest,src){
-        //                 return dest + src.replace(/.jade$/, '.html');
-        //             }
-        //         }],
-        //     }
-        // },
-        // less: {
-        //     compile: {
-        //         options: {
-        //             paths: ["css"],
-        //             cleancss: true,
-        //             modifyVars: { #<{(| /imgPath: '"http://site/images"' |)}># }
-        //         },
-        //         files: [{
-        //             expand: true,
-        //             cwd: 'src/',
-        //             src: ['*|)}>#*.less' ],
-        //             dest: 'src/',
-        //             rename: function(dest,src){
-        //                 return dest + src.replace(/.less$/, '.css');
-        //             }
-        //         }],
-        //     }
-        // },
+        jade: {
+            compile: {
+                options: {
+                    pretty: true
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['**/*.jade' ],
+                    dest: 'pub/',
+                    rename: function(dest,src){
+                        return dest + src.replace(/.jade$/, '.html');
+                    }
+                }],
+            }
+        },
+        less: {
+            compile: {
+                options: {
+                    paths: ["css"],
+                    cleancss: true,
+                    modifyVars: { /* /imgPath: '"http://site/images"' */ }
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['**/*.less' ],
+                    dest: 'pub/',
+                    rename: function(dest,src){
+                        return dest + src.replace(/.less$/, '.css');
+                    }
+                }],
+            }
+        },
         watch: {
             sync: {
                 files: ['src/**/*.json', 'src/**/*.html', 'src/**/*.js', 'src/**/*.css'],
@@ -60,25 +60,25 @@ module.exports = function(grunt) {
             },
             coffee: {
                 files: ['src/**/*.coffee'],
-                tasks: ['coffee','sync'],
+                tasks: ['coffee'],
                 options: { spawn: false, interrupt: true, debounceDelay: 250,
                     event: ['changed'] //changed, added, deleted, all
                 }
             },
-            // jade: {
-            //     files: ['src#<{(||)}>#*.jade'],
-            //     tasks: ['jade','sync'],
-            //     options: { spawn: false, interrupt: true, debounceDelay: 250,
-            //         event: ['changed'] //changed, added, deleted, all
-            //     }
-            // },
-            // less: {
-            //     files: ['src#<{(||)}>#*.less'],
-            //     tasks: ['less','sync'],
-            //     options: { spawn: false, interrupt: true, debounceDelay: 250,
-            //         event: ['changed'] //changed, added, deleted, all
-            //     }
-            // },
+            jade: {
+                files: ['src/**/*.jade'],
+                tasks: ['jade'],
+                options: { spawn: false, interrupt: true, debounceDelay: 250,
+                    event: ['changed'] //changed, added, deleted, all
+                }
+            },
+            less: {
+                files: ['src/**/*.less'],
+                tasks: ['less'],
+                options: { spawn: false, interrupt: true, debounceDelay: 250,
+                    event: ['changed'] //changed, added, deleted, all
+                }
+            },
             // svg: {
             //     files: ['src#<{(||)}>#*.svg'],
             //     tasks: ['exec:svg2png','sync'],
@@ -126,6 +126,7 @@ module.exports = function(grunt) {
                         '!**/*.coffee',
                         '!**/*.blend',
                         '!**/*.svg',
+                        '!**/*.swp', // ignore vim swap file
                         '!**/*\~'
                     ],
                     dest: 'pub'
@@ -139,12 +140,13 @@ module.exports = function(grunt) {
     });
     // Load the plugin that provides the "less" task.
     grunt.loadNpmTasks('grunt-contrib-coffee');
-    // grunt.loadNpmTasks('grunt-contrib-jade');
-    // grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-jade');
+    grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
     // grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-sync');
 
     // Default task(s).
-    grunt.registerTask('make', ['sync','coffee']);
+    grunt.registerTask('make', ['sync','jade','less','coffee']);
 };
+

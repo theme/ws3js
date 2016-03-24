@@ -1,0 +1,60 @@
+@dbg-color: rgba(255,0,0, .05);
+@dropdown-background-color: #ffe;
+/* debug */
+div, ul, li, p, a, form, h1, h2, h3, form {
+    background: @dbg-color;
+}
+
+@header-height: 2em;
+
+div, form, h2 {
+    margin: 0;
+}
+
+html, body, canvas, iframe {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+#header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: @header-height;
+    >* { display: inline; }
+    #app-name { font-weight: normal; }
+    #url-form { float: right; }
+}
+
+#main {
+    box-sizing: border-box;
+    padding-top: @header-height;
+    height: 100%;
+    >div {
+        float:left;
+        box-sizing: border-box;
+    }
+    .row { width: 100%; }
+    canvas { width: 100%; }
+    iframe { width: 100%; }
+    #row1 { height: 50%; }
+    #row2 { height: 50%; }
+}
+
+a.btn {
+    display: inline-block;
+}
+
+.panel{
+    position: relative;
+    .panel-body{
+        box-sizing: border-box;
+        height: 100%;
+        overflow: auto;
+    }
+}
+
