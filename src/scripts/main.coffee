@@ -1,4 +1,4 @@
-require ['log','Compass','navinput'], (log, Compass, navinput) ->
+require ['log','Compass','InputMixer'], (log, Compass, InputMixer) ->
     canvas = null
     scene = null
     camera = null
@@ -61,7 +61,7 @@ require ['log','Compass','navinput'], (log, Compass, navinput) ->
         watchResize canvas, resetCameraView
 
         # navigation input & camera control
-        navinput.decorate canvas # cavas now has 'zoom','rotate' ev
+        InputMixer.decorate canvas # cavas now has 'zoom','rotate' ev
         camera.tgt = new THREE.Vector3
         camera.lookAt camera.tgt
 
