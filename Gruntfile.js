@@ -134,7 +134,7 @@ module.exports = function(grunt) {
                 pretend: false, // !!! Don't do any disk operations - just write log
                 verbose: true, // Display log messages when copying files
                 //ignoreInDest: "**/*.png", // Never remove js files from destination
-                updateAndDelete: true// Remove all files from dest that are not found in src
+                updateAndDelete: false// Remove all files from dest that are not found in src
             }
         }
     });

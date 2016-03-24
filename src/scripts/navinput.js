@@ -34,7 +34,7 @@ define(function(){
             cursor.deltaClientY = e.clientY - cursor.prevClientY;
             cursor.prevClientX = e.clientX;
             cursor.prevClientY = e.clientY;
-            if(!spaceKey)
+            if(spaceKey)
                 dispatch(el,'rotate', cursor.deltaClientX * rotateRatio);
             else
                 dispatch(el,'pan', {

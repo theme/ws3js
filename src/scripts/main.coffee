@@ -1,4 +1,4 @@
-require ['log','axis','navinput'], (log, Axis, navinput) ->
+require ['log','Compass','navinput'], (log, Compass, navinput) ->
     canvas = null
     scene = null
     camera = null
@@ -51,8 +51,8 @@ require ['log','axis','navinput'], (log, Axis, navinput) ->
             oCam.zoom = 5000 / ccw()
             oCam.updateProjectionMatrix()
 
-        camera = pCam
-        camera.position.set 20,15,0
+        camera = oCam
+        camera.position.set 0,5,20
 
         # reset view
         resetCameraView()
@@ -129,12 +129,7 @@ require ['log','axis','navinput'], (log, Axis, navinput) ->
         cube = new THREE.Mesh( geometry, material )
         scene.add( cube )
 
-        # Axis 3d object
-        V3 = THREE.Vector3 # helper
-        o = new THREE.Vector3
-        scene.add new Axis(o, new V3(10,0,0),0,10,'Time','red',[10,5,1])
-        scene.add new Axis(o, new V3(0,10,0),0,10,'y','green',[10,5,1])
-        scene.add new Axis(o, new V3(0,0,10),0,10,'z','blue',[10,5,1])
+        scene.add( new Compass )
 
         init()
         # scene.add(camera)
