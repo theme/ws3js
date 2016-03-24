@@ -1,4 +1,4 @@
-require ['log','Compass','InputMixer'], (log, Compass, InputMixer) ->
+require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputMixer) ->
     canvas = null
     scene = null
     camera = null
@@ -51,7 +51,7 @@ require ['log','Compass','InputMixer'], (log, Compass, InputMixer) ->
             oCam.zoom = 5000 / ccw()
             oCam.updateProjectionMatrix()
 
-        camera = oCam
+        camera = pCam
         camera.position.set 0,5,20
 
         # reset view
@@ -97,6 +97,12 @@ require ['log','Compass','InputMixer'], (log, Compass, InputMixer) ->
             camera.position.add camUp.multiplyScalar -e.detail.deltaY
             camera.tgt.copy v.add camera.position
 
+        # change camera
+        canvas.addEventListener 'cam', (e) ->
+            switch e.detail
+                when 'o' then camera = oCam
+                when 'p' then camera = pCam
+
     animate = ->
         requestAnimationFrame animate
         render()
@@ -130,6 +136,7 @@ require ['log','Compass','InputMixer'], (log, Compass, InputMixer) ->
         scene.add( cube )
 
         scene.add( new Compass )
+        scene.add( new WebPage("wikipedia.org") )
 
         init()
         # scene.add(camera)

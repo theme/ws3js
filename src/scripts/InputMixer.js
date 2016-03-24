@@ -14,8 +14,13 @@ define(function(){
 
         var spaceKey = false;
         document.addEventListener('keydown', function(e){
-            if(e.keyCode == 32) spaceKey = true;
+            switch (e.code){
+                case "Space":
+                    spaceKey = true;
+                    break;
+            }
         });
+
         document.addEventListener('keyup', function(e){
             if(e.keyCode == 32) {
                 spaceKey = false;

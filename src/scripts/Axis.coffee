@@ -1,8 +1,8 @@
-define ['log'], (log) ->
+define ['Line'], (Line) ->
     V3 = THREE.Vector3
     class Axis extends THREE.Object3D
         constructor: (a = new V3, b = new V3(10,0,0),m,n,name,c,r)->
-            THREE.Object3D.call @
+            super
             startPoint = a
             endPoint = b
             @lower = if m then m else 0
@@ -17,14 +17,11 @@ define ['log'], (log) ->
             @scaleRatio = @length / @rangeLength
 
             # axis line
-            material = new THREE.LineBasicMaterial({color:this.color})
-
-            lineGeo = new THREE.Geometry()
-            lineGeo.vertices.push(startPoint, endPoint)
-            line = new THREE.Line(lineGeo, material)
+            line = new Line a.x,a.y,a.z,b.x,b.y,b.z,@color
             @.add(line)
             # arraow and marks
             arrowGeo = new THREE.CylinderGeometry(0, 1, 5, 8, 8)
+            material = new THREE.MeshBasicMaterial {color:@color}
             arrow = new THREE.Mesh(arrowGeo, material)
 
             arrow.position.set(0,2.5,0)  # move up, reset center

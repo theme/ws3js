@@ -125,6 +125,7 @@ module.exports = function(grunt) {
                         '!**/*.less',
                         '!**/*.coffee',
                         '!**/*.blend',
+                        '!**/*.blend1',
                         '!**/*.svg',
                         '!**/*.swp', // ignore vim swap file
                         '!**/*\~'
