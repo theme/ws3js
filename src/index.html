@@ -3,21 +3,30 @@
 <head>
     <title>My first Three.js app</title>
     <style>
-    html, body { margin:0; overflow: none; height: 100%;}
+    html, body, div, canvas { margin:0; overflow: none; border: none; width: 100%; height: 100%; box-sizing: border-box;}
     canvas { width: 100%; height: 100%; }
     span#cspan {
         position: absolute;
         bottom: 0;
         display:block;
     }
+    body > div {
+        float:left;
+        box-sizing: border-box;
+    }
+    #tree { width: 25%; height: 100% }
+    #webpage { width: 75%; height: 100% }
+    iframe { width: 100%; height: 100% }
     </style>
 </head>
 <body>
-    <canvas id="3jscanvas" draggable></canvas>
-    <span id="cspan">
-        <input type="lineedit" id='console'></input>
-    </span>
-
+    <div id="tree">
+        <canvas id="3jscanvas" draggable></canvas>
+        <span id="cspan"> <input type="lineedit" id='console'></input> </span>
+    </div>
+    <div id="webpage">
+        <iframe id="if" sandbox="allow-top-navigation" src="https://en.wikipedia.org/wiki/Main_Page"></iframe>
+    </div>
     <!-- data-main attribute tells require.js to load
              scripts/main.js after require.js loads. -->
     <script src="scripts/lib/three.js"></script>
