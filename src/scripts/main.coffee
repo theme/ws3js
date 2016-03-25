@@ -1,12 +1,50 @@
 require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputMixer) ->
     canvas = null
     scene = null
+
     camera = null
+    pCam = null
+    oCam = null
+
     renderer = null
+
     clock = new THREE.Clock
     stopTime = 5
     mixer = null    # animation player
     mixerActions = []   # animation actions list
+
+    # get current Camera
+    initCamera = ->
+        # Perspective
+        pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
+        pCam.update = ->
+            pCam.aspect = ccw()/cch()
+            pCam.updateProjectionMatrix()
+        pCam.tgt = new THREE.Vector3
+
+        # Orthographic
+        oCam = new THREE.OrthographicCamera ccw()/-2, ccw()/2, cch()/2, cch()/-2, 1, 100
+        oCam.update = ->
+            oCam.zoom = 5000 / ccw()
+            oCam.updateProjectionMatrix()
+        oCam.tgt = new THREE.Vector3
+
+        camera = pCam
+
+    switchCam = (type) ->
+        a2b = (a,b) ->
+            b.tgt.copy a.tgt
+            b.position.copy a.position
+            camera = b
+        switch type
+            when 'oCam'
+                a2b pCam,oCam if camera != oCam
+            when 'pCam'
+                a2b oCam,pCam if camera != pCam
+            when 'nextCam'
+                if camera == pCam then a2b pCam,oCam
+                else a2b oCam,pCam
+        return camera
 
     # test el size after 500 ms, callback if size changed
     watchResize = (el, callback) ->
@@ -39,20 +77,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         renderer.setClearColor new THREE.Color 0x003366
 
         # camera
-        # Perspective
-        pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
-        pCam.update = ->
-            pCam.aspect = ccw()/cch()
-            pCam.updateProjectionMatrix()
-
-        # Orthographic
-        oCam = new THREE.OrthographicCamera ccw()/-2, ccw()/2, cch()/2, cch()/-2, 1, 100
-        oCam.update = ->
-            oCam.zoom = 5000 / ccw()
-            oCam.updateProjectionMatrix()
-
-        camera = pCam
-        camera.position.set 0,5,20
+        initCamera().position.set 0,5,20
 
         # reset view
         resetCameraView()
@@ -62,7 +87,6 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         # navigation input & camera control
         InputMixer.decorate canvas # cavas now has 'zoom','rotate' ev
-        camera.tgt = new THREE.Vector3
         camera.lookAt camera.tgt
 
         # move camera close to tgt
@@ -99,9 +123,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         # change camera
         canvas.addEventListener 'cam', (e) ->
-            switch e.detail
-                when 'o' then camera = oCam
-                when 'p' then camera = pCam
+            switchCam e.detail
 
     animate = ->
         requestAnimationFrame animate
@@ -137,6 +159,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         scene.add( new Compass )
         scene.add( new WebPage("wikipedia.org") )
+
+        #TODO calculate WebPage position
 
         init()
         # scene.add(camera)

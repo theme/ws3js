@@ -19,6 +19,19 @@ define(function(){
                     spaceKey = true;
                     break;
             }
+            if (e.altKey) {
+                switch (e.code){
+                    case "KeyO":
+                        dispatch(el, 'cam', 'oCam');
+                        break;
+                    case "KeyI":
+                        dispatch(el, 'cam', 'pCam');
+                        break;
+                    case "KeyC":
+                        dispatch(el, 'cam', 'nextCam');
+                        break;
+                }
+            }
         });
 
         document.addEventListener('keyup', function(e){
