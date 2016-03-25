@@ -13,7 +13,12 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
     mixer = null    # animation player
     mixerActions = []   # animation actions list
 
-    # get current Camera
+    # helper
+    ccw = -> canvas.clientWidth
+    cch = -> canvas.clientHeight
+    cas = -> ccw() / cch()
+
+    # camera
     initCamera = ->
         # Perspective
         pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
@@ -23,9 +28,12 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         pCam.tgt = new THREE.Vector3
 
         # Orthographic
-        oCam = new THREE.OrthographicCamera ccw()/-2, ccw()/2, cch()/2, cch()/-2, 1, 100
+        oCam = new THREE.OrthographicCamera ccw()/-2, ccw()/2, cch()/2, cch()/-2, -1000, 1000
         oCam.update = ->
-            oCam.zoom = 5000 / ccw()
+            oCam.left   = - ccw()/2
+            oCam.right  = + ccw()/2
+            oCam.top    = + cch()/2
+            oCam.bottom = - cch()/2
             oCam.updateProjectionMatrix()
         oCam.tgt = new THREE.Vector3
 
@@ -64,9 +72,6 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         renderer.setViewport(0,0,canvas.clientWidth, canvas.clientHeight)
         camera.update()
 
-    # helper
-    ccw = -> canvas.clientWidth
-    cch = -> canvas.clientHeight
 
     init = ->
         # canvas
@@ -91,11 +96,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         # move camera close to tgt
         canvas.addEventListener 'zoom', (e) ->
-            pos = camera.position.clone()
-            u = pos.clone().sub(camera.tgt).normalize()
-            newpos = pos.add u.multiplyScalar e.detail
-            v = newpos.clone().sub camera.tgt
-            camera.position.copy newpos if v.length() > 0.1
+            camera.zoom += e.detail if camera.zoom+e.detail>0.1
+            camera.updateProjectionMatrix()
 
         # rotate
         canvas.addEventListener 'rotate', (e) ->
@@ -152,10 +154,14 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             do (a) ->
                 mixerActions.push mixer.clipAction(a).play()
         # a box
-        geometry = new THREE.BoxGeometry( 1, 1, 1 )
-        material = new THREE.MeshBasicMaterial( {color: 0x00ff00} )
-        cube = new THREE.Mesh( geometry, material )
-        scene.add( cube )
+        for i in [0..9]
+            for j in [0..9]
+                geometry = new THREE.BoxGeometry( 1, 1, 1 )
+                material = new THREE.MeshBasicMaterial( {color: 0x55ff00} )
+                cube = new THREE.Mesh( geometry, material )
+                cube.position.x = i * 2
+                cube.position.z = - j * 2
+                scene.add( cube )
 
         scene.add( new Compass )
         scene.add( new WebPage("wikipedia.org") )
