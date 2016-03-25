@@ -167,7 +167,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         # a box
         for i in [0..9]
             for j in [0..9]
-                geometry = new THREE.BoxGeometry( 1, 1, 1 )
+                geometry = new THREE.BoxGeometry( 1, 0.1, 1 )
                 material = new THREE.MeshBasicMaterial( {color: 0x55ff00} )
                 cube = new THREE.Mesh( geometry, material )
                 cube.position.x = i * 2
