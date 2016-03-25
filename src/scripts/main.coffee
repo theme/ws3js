@@ -23,27 +23,31 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         # Perspective
         pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
         pCam.update = ->
-            pCam.aspect = ccw()/cch()
-            pCam.updateProjectionMatrix()
+            @aspect = ccw()/cch()
+            @updateProjectionMatrix()
         pCam.tgt = new THREE.Vector3
+        pCam.position.set 0,5,20
 
         # Orthographic
-        oCam = new THREE.OrthographicCamera ccw()/-2, ccw()/2, cch()/2, cch()/-2, -1000, 1000
+        r = 4
+        oCam = new THREE.OrthographicCamera(
+            ccw()/-r, ccw()/+r, cch()/+r, cch()/-r, -1000, 1000
+        )
+        oCam.r = r
         oCam.update = ->
-            oCam.left   = - ccw()/2
-            oCam.right  = + ccw()/2
-            oCam.top    = + cch()/2
-            oCam.bottom = - cch()/2
-            oCam.updateProjectionMatrix()
+            @left   = - ccw()/r
+            @right  = + ccw()/r
+            @top    = + cch()/r
+            @bottom = - cch()/r
+            @updateProjectionMatrix()
         oCam.tgt = new THREE.Vector3
+        oCam.position.set 0,5,20
 
-        camera = pCam
+        camera = oCam
+        return
 
     switchCam = (type) ->
-        a2b = (a,b) ->
-            b.tgt.copy a.tgt
-            b.position.copy a.position
-            camera = b
+        a2b = (a,b) -> camera = b
         switch type
             when 'oCam'
                 a2b pCam,oCam if camera != oCam
@@ -82,7 +86,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         renderer.setClearColor new THREE.Color 0x003366
 
         # camera
-        initCamera().position.set 0,5,20
+        initCamera()
 
         # reset view
         resetCameraView()
@@ -94,23 +98,26 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         InputMixer.decorate canvas # cavas now has 'zoom','rotate' ev
         camera.lookAt camera.tgt
 
-        # move camera close to tgt
+        # zoom
         canvas.addEventListener 'zoom', (e) ->
-            camera.zoom += e.detail if camera.zoom+e.detail>0.1
+            camera.zoom -= e.detail if camera.zoom-e.detail>0.1
             camera.updateProjectionMatrix()
+            return
 
         # rotate
         canvas.addEventListener 'rotate', (e) ->
-            axis = camera.position.clone().sub camera.tgt
-            axis.applyAxisAngle(
+            v = camera.position.clone().sub camera.tgt
+            v.applyAxisAngle(
                 new THREE.Vector3(0,1,0),
                 -e.detail
             )
-            camera.position.copy axis.add camera.tgt
+            camera.position.copy v.add camera.tgt
             camera.lookAt camera.tgt
+            return
 
         # pan
         canvas.addEventListener 'pan', (e) ->
+            speed = 4
             camUp = new THREE.Vector3 0,1,0
             camRight = new THREE.Vector3 1,0,0
             q = new THREE.Quaternion
@@ -119,13 +126,17 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             camRight.applyQuaternion q
 
             v = camera.tgt.clone().sub camera.position
-            camera.position.add camRight.multiplyScalar e.detail.deltaX
-            camera.position.add camUp.multiplyScalar -e.detail.deltaY
+            camera.position.add camRight.multiplyScalar(
+                -e.detail.deltaX / camera.zoom * speed)
+            camera.position.add camUp.multiplyScalar(
+                e.detail.deltaY / camera.zoom * speed)
             camera.tgt.copy v.add camera.position
+            return
 
         # change camera
         canvas.addEventListener 'cam', (e) ->
             switchCam e.detail
+            return
 
     animate = ->
         requestAnimationFrame animate
